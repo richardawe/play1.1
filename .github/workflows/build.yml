@@ -106,10 +106,22 @@ jobs:
       if: matrix.platform == 'windows'
       run: |
         echo "Checking Windows build output..."
-        find src-tauri/target/${{ matrix.target }}/release/bundle -name "*.msi" -o -name "*.exe" -o -name "*.msix" | head -10
-        ls -la src-tauri/target/${{ matrix.target }}/release/bundle/ || echo "Bundle directory not found"
-        ls -la src-tauri/target/${{ matrix.target }}/release/bundle/msi/ || echo "MSI directory not found"
-        ls -la src-tauri/target/${{ matrix.target }}/release/bundle/nsis/ || echo "NSIS directory not found"
+        Get-ChildItem -Path "src-tauri/target/${{ matrix.target }}/release/bundle" -Recurse -Include "*.msi", "*.exe", "*.msix" | Select-Object -First 10
+        if (Test-Path "src-tauri/target/${{ matrix.target }}/release/bundle") {
+          Get-ChildItem -Path "src-tauri/target/${{ matrix.target }}/release/bundle" -Force
+        } else {
+          echo "Bundle directory not found"
+        }
+        if (Test-Path "src-tauri/target/${{ matrix.target }}/release/bundle/msi") {
+          Get-ChildItem -Path "src-tauri/target/${{ matrix.target }}/release/bundle/msi" -Force
+        } else {
+          echo "MSI directory not found"
+        }
+        if (Test-Path "src-tauri/target/${{ matrix.target }}/release/bundle/nsis") {
+          Get-ChildItem -Path "src-tauri/target/${{ matrix.target }}/release/bundle/nsis" -Force
+        } else {
+          echo "NSIS directory not found"
+        }
 
     - name: Upload Windows MSI
       if: matrix.platform == 'windows'
