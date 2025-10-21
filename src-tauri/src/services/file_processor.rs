@@ -216,19 +216,169 @@ impl FileProcessor {
 
     /// Process XLSX files
     async fn process_xlsx_file(file_path: &Path, content: &mut ProcessedContent) -> Result<(), FileProcessingError> {
-        // For now, treat Excel files as plain text
-        // In production, you'd use a proper Excel library
-        content.text = "Excel file processing not yet implemented".to_string();
+        use calamine::{Reader, Xlsx, open_workbook};
+        
+        println!("Processing XLSX file: {:?}", file_path);
+        
+        let mut workbook: Xlsx<_> = open_workbook(file_path)
+            .map_err(|e| FileProcessingError::ExcelError(format!("Failed to open XLSX file: {}", e)))?;
+        
+        let mut all_text = String::new();
+        let mut tables = Vec::new();
+        
+        // Try to get the first worksheet (most common case)
+        if let Some(Ok(range)) = workbook.worksheet_range_at(0) {
+            println!("Processing first worksheet");
+            
+            let mut sheet_text = String::new();
+            let mut table_data = TableData {
+                id: "table_0".to_string(),
+                title: Some("Sheet1".to_string()),
+                headers: Some(Vec::new()),
+                rows: Vec::new(),
+            };
+            
+            let mut is_first_row = true;
+            for row in range.rows() {
+                let mut row_text = String::new();
+                let mut row_data = Vec::new();
+                
+                for cell in row {
+                        let cell_value = match cell {
+                            calamine::Data::Empty => "".to_string(),
+                            calamine::Data::String(s) => s.to_string(),
+                            calamine::Data::Float(f) => f.to_string(),
+                            calamine::Data::Int(i) => i.to_string(),
+                            calamine::Data::Bool(b) => b.to_string(),
+                            calamine::Data::DateTime(dt) => dt.to_string(),
+                            calamine::Data::DateTimeIso(dt) => dt.to_string(),
+                            calamine::Data::DurationIso(d) => d.to_string(),
+                            calamine::Data::Error(e) => format!("ERROR: {:?}", e),
+                        };
+                    
+                    if !cell_value.is_empty() {
+                        row_text.push_str(&cell_value);
+                        row_text.push('\t'); // Tab separator for cells
+                    }
+                    row_data.push(cell_value);
+                }
+                
+                if !row_text.trim().is_empty() {
+                    sheet_text.push_str(&row_text.trim());
+                    sheet_text.push('\n');
+                    
+                    if is_first_row {
+                        table_data.headers = Some(row_data.clone());
+                        is_first_row = false;
+                    } else {
+                        table_data.rows.push(row_data);
+                    }
+                }
+            }
+            
+            if !sheet_text.trim().is_empty() {
+                all_text.push_str("=== Excel Data ===\n");
+                all_text.push_str(&sheet_text);
+                all_text.push_str("\n\n");
+            }
+            
+            if !table_data.rows.is_empty() {
+                tables.push(table_data);
+            }
+        }
+        
+        content.text = Self::clean_text(&all_text);
+        content.tables = tables;
+        
+        println!("XLSX processing completed: {} characters extracted", content.text.len());
+        
+        // Extract Excel metadata
         Self::extract_excel_metadata(file_path, &mut content.metadata);
+        
         Ok(())
     }
 
     /// Process XLS files
     async fn process_xls_file(file_path: &Path, content: &mut ProcessedContent) -> Result<(), FileProcessingError> {
-        // For now, treat Excel files as plain text
-        // In production, you'd use a proper Excel library
-        content.text = "Excel file processing not yet implemented".to_string();
+        use calamine::{Reader, Xls, open_workbook};
+        
+        println!("Processing XLS file: {:?}", file_path);
+        
+        let mut workbook: Xls<_> = open_workbook(file_path)
+            .map_err(|e| FileProcessingError::ExcelError(format!("Failed to open XLS file: {}", e)))?;
+        
+        let mut all_text = String::new();
+        let mut tables = Vec::new();
+        
+        // Try to get the first worksheet (most common case)
+        if let Some(Ok(range)) = workbook.worksheet_range_at(0) {
+            println!("Processing first worksheet");
+            
+            let mut sheet_text = String::new();
+            let mut table_data = TableData {
+                id: "table_0".to_string(),
+                title: Some("Sheet1".to_string()),
+                headers: Some(Vec::new()),
+                rows: Vec::new(),
+            };
+            
+            let mut is_first_row = true;
+            for row in range.rows() {
+                let mut row_text = String::new();
+                let mut row_data = Vec::new();
+                
+                for cell in row {
+                        let cell_value = match cell {
+                            calamine::Data::Empty => "".to_string(),
+                            calamine::Data::String(s) => s.to_string(),
+                            calamine::Data::Float(f) => f.to_string(),
+                            calamine::Data::Int(i) => i.to_string(),
+                            calamine::Data::Bool(b) => b.to_string(),
+                            calamine::Data::DateTime(dt) => dt.to_string(),
+                            calamine::Data::DateTimeIso(dt) => dt.to_string(),
+                            calamine::Data::DurationIso(d) => d.to_string(),
+                            calamine::Data::Error(e) => format!("ERROR: {:?}", e),
+                        };
+                    
+                    if !cell_value.is_empty() {
+                        row_text.push_str(&cell_value);
+                        row_text.push('\t'); // Tab separator for cells
+                    }
+                    row_data.push(cell_value);
+                }
+                
+                if !row_text.trim().is_empty() {
+                    sheet_text.push_str(&row_text.trim());
+                    sheet_text.push('\n');
+                    
+                    if is_first_row {
+                        table_data.headers = Some(row_data.clone());
+                        is_first_row = false;
+                    } else {
+                        table_data.rows.push(row_data);
+                    }
+                }
+            }
+            
+            if !sheet_text.trim().is_empty() {
+                all_text.push_str("=== Excel Data ===\n");
+                all_text.push_str(&sheet_text);
+                all_text.push_str("\n\n");
+            }
+            
+            if !table_data.rows.is_empty() {
+                tables.push(table_data);
+            }
+        }
+        
+        content.text = Self::clean_text(&all_text);
+        content.tables = tables;
+        
+        println!("XLS processing completed: {} characters extracted", content.text.len());
+        
+        // Extract Excel metadata
         Self::extract_excel_metadata(file_path, &mut content.metadata);
+        
         Ok(())
     }
 
