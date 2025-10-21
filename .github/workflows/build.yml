@@ -9,6 +9,7 @@ on:
 
 jobs:
   build:
+    timeout-minutes: 30
     strategy:
       matrix:
         include:
@@ -50,12 +51,26 @@ jobs:
       run: |
         # macOS already has WebKit framework built-in, no additional installation needed
         echo "macOS WebKit framework is already available"
+        # Ensure we have the latest Xcode command line tools
+        xcode-select --install || true
 
     - name: Install dependencies
       run: npm ci
 
     - name: Build the application
-      run: npm run tauri build -- --target ${{ matrix.target }}
+      run: |
+        echo "Building for target: ${{ matrix.target }}"
+        echo "Platform: ${{ matrix.platform }}"
+        echo "OS: ${{ matrix.os }}"
+        # Set environment variables to prevent WebKit installation
+        export TAURI_PRIVATE_KEY=""
+        export TAURI_KEY_PASSWORD=""
+        npm run tauri build -- --target ${{ matrix.target }}
+      env:
+        CARGO_INCREMENTAL: 0
+        CARGO_NET_RETRY: 2
+        TAURI_PRIVATE_KEY: ""
+        TAURI_KEY_PASSWORD: ""
 
     - name: Upload macOS DMG
       if: matrix.platform == 'macos'
