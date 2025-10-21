@@ -48,7 +48,8 @@ jobs:
     - name: Install system dependencies (macOS)
       if: matrix.os == 'macos-latest'
       run: |
-        brew install webkit2gtk
+        # macOS already has WebKit framework built-in, no additional installation needed
+        echo "macOS WebKit framework is already available"
 
     - name: Install dependencies
       run: npm ci
