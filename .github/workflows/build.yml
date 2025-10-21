@@ -57,8 +57,27 @@ jobs:
     - name: Install system dependencies (Windows)
       if: matrix.os == 'windows-latest'
       run: |
-        # Windows dependencies are handled by the runner, but we can install protobuf if needed
-        echo "Windows system dependencies are pre-installed"
+        # Install protobuf compiler for lance-encoding dependency
+        echo "Installing protobuf compiler for Windows..."
+        # Download and install protoc from GitHub releases
+        $protocVersion = "25.1"
+        $protocUrl = "https://github.com/protocolbuffers/protobuf/releases/download/v$protocVersion/protoc-$protocVersion-win64.zip"
+        $protocZip = "protoc.zip"
+        $protocDir = "protoc"
+        
+        # Download protoc
+        Invoke-WebRequest -Uri $protocUrl -OutFile $protocZip
+        
+        # Extract protoc
+        Expand-Archive -Path $protocZip -DestinationPath $protocDir -Force
+        
+        # Add protoc to PATH for this session
+        $protocPath = Join-Path $PWD $protocDir
+        $protocExe = Join-Path $protocPath "bin\protoc.exe"
+        echo "PROTOC=$protocExe" >> $env:GITHUB_ENV
+        echo "PATH=$protocPath\bin;$env:PATH" >> $env:GITHUB_ENV
+        
+        echo "Protoc installed at: $protocExe"
 
     - name: Install dependencies
       run: npm ci
