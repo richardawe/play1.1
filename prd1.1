@@ -1,0 +1,248 @@
+
+
+# 🧠 **Play v1.1 — “Data Ready” Edition**
+
+### *Private AI data ingestion, cleaning, and structuring inside your desktop workspace*
+
+---
+
+## 🧭 **1. Overview**
+
+**Version:** Play v1.1
+**Code Name:** *“Data Ready”*
+**Goal:** Enable users and teams to **ingest, clean, organize, and prepare large local data sources** (e.g., SharePoint, Google Drive exports, or local archives) for **AI-powered search, summarization, and model training** — using Play’s local, offline-first architecture.
+
+**Primary Use Case:**
+
+> “I have 10 GB of enterprise data and want to make it AI-ready — cleaned, structured, and searchable — without sending it to the cloud.”
+
+---
+
+## 🎯 **2. Objectives**
+
+| Objective                | Description                                                                                       | Outcome                              |
+| ------------------------ | ------------------------------------------------------------------------------------------------- | ------------------------------------ |
+| **Data Ingestion**       | Seamlessly import large datasets from local or external sources (SharePoint export, folder, ZIP). | Unified workspace index              |
+| **AI Cleaning**          | Use local AI to clean and standardize text, rename files, fix formatting, and extract structure.  | Consistent, high-quality text corpus |
+| **Metadata Enrichment**  | Automatically detect authors, dates, topics, and tags.                                            | Enhanced context and organization    |
+| **AI-Ready Structuring** | Export clean data for embeddings, RAG, or fine-tuning.                                            | Ready-to-use dataset                 |
+| **Full Privacy**         | 100% local — no cloud transfer.                                                                   | Compliance & trust                   |
+
+---
+
+## 🧱 **3. Architecture Notes**
+
+**Foundation:** Builds directly on Play 1.0 architecture.
+No core changes — only new *modules and services* added.
+
+### 🏗️ **Architecture Layer Overview**
+
+```text
+Frontend (React + Tauri)
+ ├── Files / Docs / Tasks / Chat (existing)
+ ├── NEW: Data Module (Ingestion + Cleaning Dashboard)
+ └── Unified Search + Visualization Layer
+
+Backend (Rust / Axum)
+ ├── SQLite Database (expanded schema)
+ ├── File Indexing Service
+ ├── AI Cleaning Engine (Ollama)
+ ├── Metadata Extractor (MIME/EXIF/Text parser)
+ └── Embeddings + Vector Index (Qdrant or pgvector)
+```
+
+---
+
+## 🧩 **4. New Modules**
+
+### **A. Data Ingestion Module**
+
+**Purpose:** Import and index large data collections.
+
+**Features**
+
+* Folder/ZIP import wizard (drag-and-drop)
+* Recursive file indexing by MIME type
+* Duplicate detection by hash
+* Progress tracking for large imports
+* File preview (text, image, PDF)
+* Metadata capture (author, date, path, tags)
+
+**Backend Flow**
+
+1. User selects source →
+2. Rust backend parses recursively →
+3. Generates index entries →
+4. Stores to SQLite (`files`, `metadata`, `ingestion_jobs`).
+
+---
+
+### **B. Data Cleaning Module**
+
+**Purpose:** AI-assisted cleaning and normalization of text and document content.
+
+**Features**
+
+* Text cleanup: remove broken chars, unify encoding
+* Structure repair: extract content from DOCX, PDF, HTML
+* AI auto-correction (grammar, summarization, metadata fix)
+* Batch actions: clean all, rename by title, deduplicate
+* Manual review queue for human validation
+
+**AI Integration**
+
+* Local Ollama model (Llama 3 or Mistral)
+* Prompts:
+
+  * “Clean and normalize this document”
+  * “Extract title, author, summary, and keywords”
+  * “Convert to Markdown with proper formatting”
+
+---
+
+### **C. AI Readiness Module**
+
+**Purpose:** Transform cleaned data into formats for AI pipelines (RAG, fine-tuning).
+
+**Features**
+
+* Generate embeddings via local model (nomic-embed-text)
+* Store vectors in pgvector/Qdrant
+* Export options:
+
+  * `.jsonl` for fine-tuning
+  * `.md` or `.txt` corpus for training
+  * `.csv` metadata summary
+* Semantic linking between related documents
+
+---
+
+### **D. Cleaning Dashboard (UI)**
+
+**Purpose:** Visual workspace to monitor progress.
+
+**Sections**
+
+1. **Data Sources** — list of imported folders/files
+2. **Cleaning Queue** — AI tasks in progress
+3. **Review Panel** — before/after comparisons
+4. **Stats** — word count, completion %, duplicates removed
+5. **AI Summary View** — automatic dataset overview
+
+---
+
+## 💾 **5. Data Model Additions**
+
+| Table            | Purpose                                    |
+| ---------------- | ------------------------------------------ |
+| `ingestion_jobs` | Track import sessions, status, and metrics |
+| `metadata`       | Extracted attributes (author, topic, date) |
+| `cleaning_queue` | Queue of pending AI cleaning tasks         |
+| `vector_index`   | Embeddings for AI search and linking       |
+
+---
+
+## 🧰 **6. Tech Stack (Additions)**
+
+| Layer           | Tool / Library           | Purpose                          |
+| --------------- | ------------------------ | -------------------------------- |
+| **Frontend**    | React + Zustand          | Cleaning dashboard, job tracking |
+| **Backend**     | Rust (Axum)              | File parsing & job orchestration |
+| **Database**    | SQLite                   | Store job metadata               |
+| **AI Runtime**  | Ollama / LM Studio       | Local inference                  |
+| **Vector DB**   | pgvector / Qdrant        | Semantic linking                 |
+| **File Parser** | Tika / rust-mime-sniffer | Metadata extraction              |
+| **PDF/Text**    | `pdfminer`, `pandoc`     | Content conversion               |
+
+---
+
+## ⚙️ **7. Build Steps**
+
+### **Phase 1 — Ingestion Layer**
+
+* [ ] Add ingestion wizard (UI)
+* [ ] Implement recursive file crawler
+* [ ] Write Rust ingestion service + DB schema
+* [ ] Add progress tracking and preview
+
+### **Phase 2 — Cleaning Engine**
+
+* [ ] Integrate Ollama cleaning prompt engine
+* [ ] Implement batch queue manager
+* [ ] Add before/after comparison in UI
+* [ ] Save cleaned outputs locally
+
+### **Phase 3 — AI Readiness Export**
+
+* [ ] Build embedding generator service
+* [ ] Add export formats (`jsonl`, `md`, `csv`)
+* [ ] Integrate semantic search in Play
+
+### **Phase 4 — QA & UX**
+
+* [ ] Implement dashboard
+* [ ] Optimize performance for 10 GB+ datasets
+* [ ] Add caching and async job management
+* [ ] Package and test for macOS / Windows
+
+---
+
+## 🎨 **8. User Experience Flow**
+
+1. **Import**
+
+   * Drag a folder or ZIP into Play → files appear in “Ingestion”
+2. **AI Cleaning**
+
+   * Click “Clean All” → AI cleans and standardizes documents
+3. **Review**
+
+   * User views side-by-side before/after
+4. **AI Ready**
+
+   * Click “Prepare for AI” → Embeddings generated
+5. **Export**
+
+   * Save cleaned dataset or use directly in Play 2.0’s search/assistant
+
+---
+
+## 🧪 **9. Success Metrics**
+
+| Metric            | Target                            |
+| ----------------- | --------------------------------- |
+| Import capacity   | ≥ 20 GB dataset processed locally |
+| Cleaning accuracy | ≥ 90 % valid text output          |
+| Metadata coverage | ≥ 80 % documents tagged           |
+| Export latency    | ≤ 3 s per doc on M1 Mac           |
+| User satisfaction | ≥ 8/10 (early testers)            |
+
+---
+
+## 🔮 **10. Future Enhancements (Play 2.0 Alignment)**
+
+* Multi-user collaboration & sharing
+* Real-time AI document chat (“talk to your dataset”)
+* Smart pipelines (auto-update vector index)
+* Integration with enterprise file systems
+* Custom model plug-ins for industry-specific data
+
+---
+
+## 🧩 **11. Deliverables**
+
+| Deliverable              | Description                              |
+| ------------------------ | ---------------------------------------- |
+| **Play 1.1 Desktop App** | Self-contained Tauri build               |
+| **Data Module**          | Import, clean, and prepare datasets      |
+| **AI Integration**       | Local cleaning and embedding             |
+| **Docs & Tutorials**     | “Preparing Enterprise Data for AI” guide |
+| **Test Dataset**         | Sample SharePoint archive for demos      |
+
+---
+
+### ✅ **Summary**
+
+Play 1.1 transforms the app from a productivity hub into a **data-ready workspace** — empowering professionals to privately clean, structure, and prepare their organization’s information for AI workflows.
+It keeps Play’s DNA intact: **offline-first, AI-powered, and privacy-focused**, while introducing a critical capability for the **future of intelligent workspaces**.
+
