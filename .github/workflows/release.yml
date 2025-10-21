@@ -44,7 +44,17 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
+        # Try to install both versions of JavaScriptCore
         sudo apt-get install -y libwebkit2gtk-4.1-dev libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev protobuf-compiler libsoup2.4-dev libjavascriptcoregtk-4.1-dev
+        # Try to install the older version if available
+        sudo apt-get install -y libjavascriptcoregtk-4.0-dev || echo "libjavascriptcoregtk-4.0-dev not available, continuing with 4.1"
+        # Set PKG_CONFIG_PATH to help find the libraries
+        echo "PKG_CONFIG_PATH=/usr/lib/pkgconfig:/usr/lib/x86_64-linux-gnu/pkgconfig" >> $GITHUB_ENV
+        # Try to create a symlink from 4.1 to 4.0 if 4.0 is not available
+        if [ ! -f "/usr/lib/x86_64-linux-gnu/pkgconfig/javascriptcoregtk-4.0.pc" ] && [ -f "/usr/lib/x86_64-linux-gnu/pkgconfig/javascriptcoregtk-4.1.pc" ]; then
+          echo "Creating symlink from javascriptcoregtk-4.1 to javascriptcoregtk-4.0"
+          sudo ln -sf /usr/lib/x86_64-linux-gnu/pkgconfig/javascriptcoregtk-4.1.pc /usr/lib/x86_64-linux-gnu/pkgconfig/javascriptcoregtk-4.0.pc
+        fi
 
     - name: Install system dependencies (macOS)
       if: matrix.os == 'macos-latest'
