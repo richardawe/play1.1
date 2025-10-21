@@ -44,7 +44,7 @@ jobs:
       if: matrix.os == 'ubuntu-latest'
       run: |
         sudo apt-get update
-        sudo apt-get install -y libwebkit2gtk-4.1-dev libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev
+        sudo apt-get install -y libwebkit2gtk-4.1-dev libssl-dev libgtk-3-dev libayatana-appindicator3-dev librsvg2-dev protobuf-compiler
 
     - name: Install system dependencies (macOS)
       if: matrix.os == 'macos-latest'
@@ -53,8 +53,16 @@ jobs:
         echo "macOS WebKit framework is already available"
         # Ensure we have the latest Xcode command line tools
         xcode-select --install || true
+        # Install protobuf for lance-encoding dependency
+        brew install protobuf
         # Prevent any WebKit installation attempts
         echo "Skipping WebKit installation - using system WebKit"
+
+    - name: Install system dependencies (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        # Windows dependencies are handled by the runner, but we can install protobuf if needed
+        echo "Windows system dependencies are pre-installed"
 
     - name: Install dependencies
       run: npm ci
