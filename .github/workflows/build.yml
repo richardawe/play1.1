@@ -113,8 +113,8 @@ jobs:
         CARGO_NET_RETRY: 2
         TAURI_PRIVATE_KEY: ""
         TAURI_KEY_PASSWORD: ""
-        # Disable WebKit installation
-        TAURI_BUNDLE_ACTIVE: "false"
+        # Enable bundle creation for Windows
+        TAURI_BUNDLE_ACTIVE: "true"
         # Prevent any WebKit installation attempts
         WEBKIT_DISABLE_INSTALL: "true"
 

@@ -77,8 +77,35 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-    - name: Build the application
-      run: npm run tauri build -- --target ${{ matrix.target }}
+    - name: Build the application (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        echo "Building for target: ${{ matrix.target }}"
+        npx tauri build --target ${{ matrix.target }} --verbose
+      env:
+        CARGO_INCREMENTAL: 0
+        CARGO_NET_RETRY: 2
+        TAURI_PRIVATE_KEY: ""
+        TAURI_KEY_PASSWORD: ""
+        # Enable bundle creation for Windows
+        TAURI_BUNDLE_ACTIVE: "true"
+        # Prevent any WebKit installation attempts
+        WEBKIT_DISABLE_INSTALL: "true"
+
+    - name: Build the application (macOS)
+      if: matrix.os == 'macos-latest'
+      run: |
+        echo "Building for target: ${{ matrix.target }}"
+        npx tauri build --target ${{ matrix.target }} --verbose
+      env:
+        CARGO_INCREMENTAL: 0
+        CARGO_NET_RETRY: 2
+        TAURI_PRIVATE_KEY: ""
+        TAURI_KEY_PASSWORD: ""
+        # Disable WebKit installation
+        TAURI_BUNDLE_ACTIVE: "false"
+        # Prevent any WebKit installation attempts
+        WEBKIT_DISABLE_INSTALL: "true"
 
     - name: Upload macOS DMG
       if: matrix.platform == 'macos'
