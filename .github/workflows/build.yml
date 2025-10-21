@@ -71,13 +71,32 @@ jobs:
     - name: Install dependencies
       run: npm ci
 
-    - name: Build the application
+    - name: Build the application (macOS/Linux)
+      if: matrix.os != 'windows-latest'
       run: |
         echo "Building for target: ${{ matrix.target }}"
         echo "Platform: ${{ matrix.platform }}"
         echo "OS: ${{ matrix.os }}"
         # Use custom build script to prevent WebKit installation issues
         ./build-script.sh ${{ matrix.target }}
+      env:
+        CARGO_INCREMENTAL: 0
+        CARGO_NET_RETRY: 2
+        TAURI_PRIVATE_KEY: ""
+        TAURI_KEY_PASSWORD: ""
+        # Disable WebKit installation
+        TAURI_BUNDLE_ACTIVE: "false"
+        # Prevent any WebKit installation attempts
+        WEBKIT_DISABLE_INSTALL: "true"
+
+    - name: Build the application (Windows)
+      if: matrix.os == 'windows-latest'
+      run: |
+        echo "Building for target: ${{ matrix.target }}"
+        echo "Platform: ${{ matrix.platform }}"
+        echo "OS: ${{ matrix.os }}"
+        # Windows build with environment variables
+        npx tauri build --target ${{ matrix.target }} --verbose
       env:
         CARGO_INCREMENTAL: 0
         CARGO_NET_RETRY: 2
@@ -106,22 +125,31 @@ jobs:
       if: matrix.platform == 'windows'
       run: |
         echo "Checking Windows build output..."
-        Get-ChildItem -Path "src-tauri/target/${{ matrix.target }}/release/bundle" -Recurse -Include "*.msi", "*.exe", "*.msix" | Select-Object -First 10
-        if (Test-Path "src-tauri/target/${{ matrix.target }}/release/bundle") {
-          Get-ChildItem -Path "src-tauri/target/${{ matrix.target }}/release/bundle" -Force
+        echo "Current working directory:"
+        Get-Location
+        echo "Checking if target directory exists:"
+        if (Test-Path "src-tauri/target") {
+          echo "src-tauri/target exists"
+          Get-ChildItem -Path "src-tauri/target" -Force
         } else {
-          echo "Bundle directory not found"
+          echo "src-tauri/target does not exist"
         }
-        if (Test-Path "src-tauri/target/${{ matrix.target }}/release/bundle/msi") {
-          Get-ChildItem -Path "src-tauri/target/${{ matrix.target }}/release/bundle/msi" -Force
+        echo "Checking if release directory exists:"
+        if (Test-Path "src-tauri/target/${{ matrix.target }}") {
+          echo "src-tauri/target/${{ matrix.target }} exists"
+          Get-ChildItem -Path "src-tauri/target/${{ matrix.target }}" -Force
         } else {
-          echo "MSI directory not found"
+          echo "src-tauri/target/${{ matrix.target }} does not exist"
         }
-        if (Test-Path "src-tauri/target/${{ matrix.target }}/release/bundle/nsis") {
-          Get-ChildItem -Path "src-tauri/target/${{ matrix.target }}/release/bundle/nsis" -Force
+        echo "Checking if release directory exists:"
+        if (Test-Path "src-tauri/target/${{ matrix.target }}/release") {
+          echo "src-tauri/target/${{ matrix.target }}/release exists"
+          Get-ChildItem -Path "src-tauri/target/${{ matrix.target }}/release" -Force
         } else {
-          echo "NSIS directory not found"
+          echo "src-tauri/target/${{ matrix.target }}/release does not exist"
         }
+        echo "Checking for any .exe files in the entire target directory:"
+        Get-ChildItem -Path "src-tauri/target" -Recurse -Include "*.exe" -ErrorAction SilentlyContinue | Select-Object -First 10
 
     - name: Upload Windows MSI
       if: matrix.platform == 'windows'
