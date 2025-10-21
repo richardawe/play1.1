@@ -100,14 +100,34 @@ jobs:
         # Prevent any WebKit installation attempts
         WEBKIT_DISABLE_INSTALL: "true"
 
+    - name: Check Tauri configuration
+      if: matrix.os == 'windows-latest'
+      run: |
+        echo "Checking Tauri configuration..."
+        if (Test-Path "src-tauri/tauri.conf.json") {
+          echo "Tauri config exists"
+          Get-Content "src-tauri/tauri.conf.json" | ConvertFrom-Json | ConvertTo-Json -Depth 10
+        } else {
+          echo "Tauri config not found!"
+        }
+
     - name: Build the application (Windows)
       if: matrix.os == 'windows-latest'
       run: |
         echo "Building for target: ${{ matrix.target }}"
         echo "Platform: ${{ matrix.platform }}"
         echo "OS: ${{ matrix.os }}"
+        echo "Environment variables:"
+        echo "TAURI_BUNDLE_ACTIVE: $env:TAURI_BUNDLE_ACTIVE"
+        echo "WEBKIT_DISABLE_INSTALL: $env:WEBKIT_DISABLE_INSTALL"
         # Windows build with environment variables
         npx tauri build --target ${{ matrix.target }} --verbose
+        echo "Build completed, checking for bundle files..."
+        if (Test-Path "src-tauri/target/${{ matrix.target }}/release/bundle") {
+          echo "Bundle directory created successfully"
+        } else {
+          echo "Bundle directory was not created - build may have failed"
+        }
       env:
         CARGO_INCREMENTAL: 0
         CARGO_NET_RETRY: 2
@@ -153,8 +173,17 @@ jobs:
         } else {
           echo "src-tauri/target/${{ matrix.target }}/release does not exist"
         }
+        echo "Checking for bundle directory:"
+        if (Test-Path "src-tauri/target/${{ matrix.target }}/release/bundle") {
+          echo "Bundle directory exists"
+          Get-ChildItem -Path "src-tauri/target/${{ matrix.target }}/release/bundle" -Force -Recurse
+        } else {
+          echo "Bundle directory does not exist - this is the problem!"
+        }
         echo "Checking for any .exe files in the entire target directory:"
         Get-ChildItem -Path "src-tauri/target" -Recurse -Include "*.exe" -ErrorAction SilentlyContinue | Select-Object -First 10
+        echo "Checking for any .msi files in the entire target directory:"
+        Get-ChildItem -Path "src-tauri/target" -Recurse -Include "*.msi" -ErrorAction SilentlyContinue | Select-Object -First 10
 
     - name: Upload Windows MSI
       if: matrix.platform == 'windows'

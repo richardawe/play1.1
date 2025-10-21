@@ -47,7 +47,8 @@
       "targets": "all",
       "identifier": "com.play.workspace",
       "icon": [
-        "icons/icon.icns"
+        "icons/icon.icns",
+        "icons/icon.ico"
       ],
       "longDescription": "Play is a 100% offline-first AI-powered workspace. Works with locally installed Ollama for AI features. Supports chat, documents, tasks, and calendar with complete privacy.",
       "shortDescription": "Offline AI-Powered Workspace",
@@ -61,6 +62,11 @@
       },
       "appimage": {
         "bundleMediaFramework": true
+      },
+      "windows": {
+        "wix": {
+          "language": "en-US"
+        }
       }
     },
     "security": {
