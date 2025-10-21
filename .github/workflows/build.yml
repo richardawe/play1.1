@@ -53,6 +53,8 @@ jobs:
         echo "macOS WebKit framework is already available"
         # Ensure we have the latest Xcode command line tools
         xcode-select --install || true
+        # Prevent any WebKit installation attempts
+        echo "Skipping WebKit installation - using system WebKit"
 
     - name: Install dependencies
       run: npm ci
@@ -62,15 +64,17 @@ jobs:
         echo "Building for target: ${{ matrix.target }}"
         echo "Platform: ${{ matrix.platform }}"
         echo "OS: ${{ matrix.os }}"
-        # Set environment variables to prevent WebKit installation
-        export TAURI_PRIVATE_KEY=""
-        export TAURI_KEY_PASSWORD=""
-        npm run tauri build -- --target ${{ matrix.target }}
+        # Use custom build script to prevent WebKit installation issues
+        ./build-script.sh ${{ matrix.target }}
       env:
         CARGO_INCREMENTAL: 0
         CARGO_NET_RETRY: 2
         TAURI_PRIVATE_KEY: ""
         TAURI_KEY_PASSWORD: ""
+        # Disable WebKit installation
+        TAURI_BUNDLE_ACTIVE: "false"
+        # Prevent any WebKit installation attempts
+        WEBKIT_DISABLE_INSTALL: "true"
 
     - name: Upload macOS DMG
       if: matrix.platform == 'macos'
