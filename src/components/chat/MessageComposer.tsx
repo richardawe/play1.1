@@ -1,11 +1,11 @@
 // Message Composer - AI Chat Input
 import { useState, useRef, KeyboardEvent } from 'react';
 import { Send, Paperclip, Loader2 } from 'lucide-react';
-import { useChatStore } from '../../store/useChatStore';
+import { useEnhancedChatStore } from '../../store/useEnhancedChatStore';
 
 export default function MessageComposer() {
   const [message, setMessage] = useState('');
-  const { sendToAI, aiThinking } = useChatStore();
+  const { sendToAI, aiThinking } = useEnhancedChatStore();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = async () => {

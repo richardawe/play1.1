@@ -21,7 +21,7 @@ export default function MonthView() {
       {/* Day headers */}
       <div className="grid grid-cols-7 gap-2 mb-2">
         {dayNames.map((day) => (
-          <div key={day} className="text-center text-sm font-medium text-muted-foreground py-2">
+          <div key={day} className="text-center text-sm font-medium text-foreground py-2">
             {day}
           </div>
         ))}

@@ -22,6 +22,9 @@ pub mod cleaning;
 pub mod vector_search;
 pub mod ai_insights;
 pub mod data_operations;
+pub mod lancedb;
+pub mod document_intelligence;
+pub mod vector_database;
 
 #[tauri::command]
 pub fn greet(name: &str) -> String {

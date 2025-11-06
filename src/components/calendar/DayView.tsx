@@ -17,7 +17,7 @@ export default function DayView() {
       <div className="min-w-[600px]">
         {/* Day Header */}
         <div className="text-center mb-4 pb-4 border-b border-border">
-          <div className="text-sm text-muted-foreground">{format(currentDate, 'EEEE')}</div>
+          <div className="text-sm text-foreground">{format(currentDate, 'EEEE')}</div>
           <div className="text-3xl font-bold">{format(currentDate, 'MMMM d, yyyy')}</div>
         </div>
 

@@ -7,8 +7,8 @@ import ExportManager from '../export/ExportManager';
 
 interface MainLayoutProps {
   children: ReactNode;
-  currentModule: 'data-operations' | 'chat' | 'documents' | 'tasks' | 'calendar';
-  onModuleChange: (module: 'data-operations' | 'chat' | 'documents' | 'tasks' | 'calendar') => void;
+  currentModule: 'data-operations' | 'chat' | 'documents' | 'tasks' | 'calendar' | 'vector-test';
+  onModuleChange: (module: 'data-operations' | 'chat' | 'documents' | 'tasks' | 'calendar' | 'vector-test') => void;
 }
 
 export default function MainLayout({ children, currentModule, onModuleChange }: MainLayoutProps) {
@@ -32,7 +32,7 @@ export default function MainLayout({ children, currentModule, onModuleChange }: 
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isSearchOpen]);
 
-  const handleNavigate = (module: 'data-operations' | 'chat' | 'documents' | 'tasks' | 'calendar') => {
+  const handleNavigate = (module: 'data-operations' | 'chat' | 'documents' | 'tasks' | 'calendar' | 'vector-test') => {
     onModuleChange(module);
   };
 

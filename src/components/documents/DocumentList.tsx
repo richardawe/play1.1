@@ -60,7 +60,7 @@ export default function DocumentList() {
               onClick={() => setCurrentDocument(doc)}
               className="w-full text-left p-3 rounded-lg hover:bg-accent transition-colors"
             >
-              <div className="font-medium text-sm truncate">{doc.title}</div>
+              <div className="font-medium text-sm truncate text-foreground">{doc.title}</div>
               <div className="text-xs text-muted-foreground mt-1">
                 {formatRelativeTime(doc.updated_at)}
               </div>

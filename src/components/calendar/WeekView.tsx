@@ -26,7 +26,7 @@ export default function WeekView() {
               }`}
             >
               <div className="text-center mb-3 pb-2 border-b border-border">
-                <div className="text-xs text-muted-foreground">{format(day, 'EEE')}</div>
+                <div className="text-xs text-foreground">{format(day, 'EEE')}</div>
                 <div className={`text-2xl font-bold ${isTodayDate ? 'text-primary' : ''}`}>
                   {format(day, 'd')}
                 </div>

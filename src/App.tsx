@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react';
 import MainLayout from './components/layout/MainLayout';
 import ChatInterface from './components/chat/ChatInterface';
+import EnhancedChatInterface from './components/chat/EnhancedChatInterface';
 import DocumentsInterface from './components/documents/DocumentsInterface';
 import TasksInterface from './components/tasks/TasksInterface';
 import CalendarView from './components/calendar/CalendarView';
 import DataOperationsInterface from './components/data-operations/DataOperationsInterface';
+import VectorTestPage from './components/vector/VectorTestPage';
 import FirstRunSetup from './components/setup/FirstRunSetup';
 import { useSettingsStore } from './store/useSettingsStore';
 import ContextMenu from './components/common/ContextMenu';
@@ -13,7 +15,7 @@ import DragDropOverlay from './components/common/DragDropOverlay';
 
 function App() {
   const { settings, loadSettings } = useSettingsStore();
-  const [currentModule, setCurrentModule] = useState<'data-operations' | 'chat' | 'documents' | 'tasks' | 'calendar'>(
+  const [currentModule, setCurrentModule] = useState<'data-operations' | 'chat' | 'documents' | 'tasks' | 'calendar' | 'vector-test'>(
     'data-operations'
   );
   // Always check setup status on app start
@@ -103,13 +105,15 @@ function App() {
       case 'data-operations':
         return <DataOperationsInterface />;
       case 'chat':
-        return <ChatInterface />;
+        return <EnhancedChatInterface />;
       case 'documents':
         return <DocumentsInterface />;
       case 'tasks':
         return <TasksInterface />;
       case 'calendar':
         return <CalendarView />;
+      case 'vector-test':
+        return <VectorTestPage />;
       default:
         return null;
     }

@@ -131,7 +131,7 @@
     --secondary: 241 245 249; /* #F1F5F9 */
     --secondary-foreground: 51 65 85; /* #334155 */
     --muted: 248 250 252; /* #F8FAFC */
-    --muted-foreground: 100 116 139; /* #64748B */
+    --muted-foreground: 71 85 105; /* #475569 - Darker slate for better readability */
     --accent: 139 92 246; /* #8B5CF6 - Violet 500 */
     --accent-foreground: 255 255 255; /* #FFFFFF */
     --destructive: 239 68 68; /* #EF4444 */
@@ -154,7 +154,7 @@
     --secondary: 51 65 85; /* #334155 */
     --secondary-foreground: 226 232 240; /* #E2E8F0 */
     --muted: 51 65 85; /* #334155 */
-    --muted-foreground: 148 163 184; /* #94A3B8 */
+    --muted-foreground: 203 213 225; /* #CBD5E1 - Lighter but still readable in dark mode */
     --accent: 139 92 246; /* #8B5CF6 */
     --accent-foreground: 255 255 255; /* #FFFFFF */
     --destructive: 239 68 68; /* #EF4444 */

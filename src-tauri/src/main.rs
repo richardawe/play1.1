@@ -8,8 +8,10 @@ mod utils;
 
 use services::database::Database;
 use services::ollama::OllamaService;
+use services::lancedb_service::LanceDBService;
 use std::sync::Arc;
 use tokio::sync::Mutex;
+use std::path::PathBuf;
 
 #[tokio::main]
 async fn main() {
@@ -25,15 +27,27 @@ async fn main() {
     // Initialize Ollama service (defaults to localhost:8080)
     let ollama = Arc::new(Mutex::new(OllamaService::new(None)));
 
+    // Initialize LanceDB service
+    let db_path = PathBuf::from("data/lancedb");
+    let lancedb = match LanceDBService::new(&db_path, ollama.clone(), db.clone()).await {
+        Ok(service) => Arc::new(Mutex::new(service)),
+        Err(e) => {
+            eprintln!("Failed to initialize LanceDB service: {}", e);
+            std::process::exit(1);
+        }
+    };
+
     tauri::Builder::default()
         .manage(db)
         .manage(ollama)
+        .manage(lancedb)
         .invoke_handler(tauri::generate_handler![
             commands::greet,
             commands::messages::get_messages,
             commands::messages::create_message,
             commands::messages::update_message,
             commands::messages::delete_message,
+            commands::messages::clear_messages,
             commands::settings::get_settings,
             commands::settings::update_settings,
             commands::settings::get_setting,
@@ -159,6 +173,29 @@ async fn main() {
             commands::data_operations::get_processed_files,
             commands::data_operations::get_data_chunks,
             commands::data_operations::export_processed_data,
+            // LanceDB commands
+            commands::lancedb::create_lancedb_entry,
+            commands::lancedb::lancedb_similarity_search,
+            commands::lancedb::lancedb_generate_embedding,
+            commands::lancedb::lancedb_index_content,
+            commands::lancedb::lancedb_search_similar_content,
+            commands::lancedb::lancedb_get_stats,
+            commands::lancedb::lancedb_delete_content_vectors,
+            commands::lancedb::lancedb_delete_entry,
+            commands::lancedb::lancedb_migrate_from_sqlite,
+            commands::lancedb::lancedb_get_all_entries,
+            commands::lancedb::lancedb_clear_database,
+            // Document Intelligence commands
+            commands::document_intelligence::process_document_intelligence,
+            commands::document_intelligence::auto_tag_document,
+            commands::document_intelligence::summarize_document,
+            commands::document_intelligence::find_related_documents,
+            commands::document_intelligence::process_all_documents_intelligence,
+            commands::document_intelligence::get_document_intelligence_stats,
+            // Vector Database commands
+            commands::vector_database::select_database_path,
+            commands::vector_database::get_database_info,
+            commands::vector_database::list_database_files,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

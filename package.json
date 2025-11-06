@@ -19,6 +19,7 @@
     "test:all": "npm run test:coverage && npm run test:e2e",
     "test:watch": "vitest watch",
     "test:setup": "tsx tests/fixtures/test-database.ts",
+    "screenshot": "node scripts/take-screenshot.js",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"src/**/*.{ts,tsx,css}\""
   },
@@ -34,14 +35,14 @@
     "@tiptap/react": "^2.8.0",
     "@tiptap/starter-kit": "^2.8.0",
     "class-variance-authority": "^0.7.0",
-    "clsx": "^2.0.0",
+    "clsx": "^2.1.1",
     "date-fns": "^4.1.0",
     "lucide-react": "^0.294.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-markdown": "^10.1.0",
     "remark-gfm": "^4.0.1",
-    "tailwind-merge": "^2.2.0",
+    "tailwind-merge": "^2.6.0",
     "zustand": "^4.4.7"
   },
   "devDependencies": {

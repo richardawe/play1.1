@@ -351,9 +351,12 @@ impl Database {
             [],
         )?;
 
+        // Drop and recreate vector_index table to ensure no foreign key constraints
+        self.conn.execute("DROP TABLE IF EXISTS vector_index", [])?;
+        
         // Vector Index table - Embeddings for AI search and linking
         self.conn.execute(
-            "CREATE TABLE IF NOT EXISTS vector_index (
+            "CREATE TABLE vector_index (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 content_id INTEGER NOT NULL,
                 content_type TEXT NOT NULL,
@@ -362,8 +365,7 @@ impl Database {
                 model_name TEXT NOT NULL,
                 chunk_index INTEGER DEFAULT 0,
                 metadata TEXT,
-                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY(content_id) REFERENCES files(id) ON DELETE CASCADE
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
             )",
             [],
         )?;
@@ -537,6 +539,11 @@ impl Database {
 
     pub fn delete_message(&self, id: i64) -> Result<()> {
         self.conn.execute("DELETE FROM messages WHERE id = ?1", params![id])?;
+        Ok(())
+    }
+
+    pub fn clear_messages(&self, channel_id: i64) -> Result<()> {
+        self.conn.execute("DELETE FROM messages WHERE channel_id = ?1", params![channel_id])?;
         Ok(())
     }
 

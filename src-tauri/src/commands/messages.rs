@@ -51,3 +51,14 @@ pub async fn delete_message(
         .map_err(|e| e.to_string())
 }
 
+#[tauri::command]
+pub async fn clear_messages(
+    channel_id: i64,
+    db: State<'_, Arc<Mutex<Database>>>,
+) -> Result<(), String> {
+    let db = db.lock().await;
+    
+    db.clear_messages(channel_id)
+        .map_err(|e| e.to_string())
+}
+

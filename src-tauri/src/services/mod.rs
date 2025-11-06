@@ -18,4 +18,6 @@ pub mod vector_search_service;
 pub mod ai_insights_service;
 pub mod data_operations_service;
 pub mod file_processor;
+pub mod lancedb_service;
+pub mod document_intelligence_service;
 

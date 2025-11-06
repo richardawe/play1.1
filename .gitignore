@@ -107,3 +107,6 @@ src-tauri/Cargo.lock
 *.AppImage
 *.msi
 *.exe
+
+# Screenshots
+screenshot/
