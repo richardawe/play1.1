@@ -1,6 +1,6 @@
 // Vector Database Selector Component
-import React, { useState, useEffect } from 'react';
-import { Database, FolderOpen, FileText, Settings, RefreshCw } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { Database, FolderOpen, FileText, RefreshCw } from 'lucide-react';
 import { invoke } from '@tauri-apps/api/tauri';
 
 interface VectorDatabase {
@@ -30,7 +30,7 @@ export default function VectorDatabaseSelector({
     setLoading(true);
     try {
       // Get LanceDB stats to see current database
-      const stats = await invoke('lancedb_get_stats');
+      const stats = await invoke<{ total_vectors: number; last_updated?: string }>('lancedb_get_stats');
       
       // For now, we'll create a default database entry
       // In the future, this could scan for multiple databases

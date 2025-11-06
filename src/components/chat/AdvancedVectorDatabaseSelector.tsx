@@ -1,14 +1,12 @@
 // Advanced Vector Database Selector with File Browser
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   Database, 
   FolderOpen, 
   FileText, 
-  Settings, 
   RefreshCw, 
   Plus,
   Search,
-  X,
   Check
 } from 'lucide-react';
 import { invoke } from '@tauri-apps/api/tauri';
@@ -35,7 +33,6 @@ export default function AdvancedVectorDatabaseSelector({
   const [databases, setDatabases] = useState<VectorDatabase[]>([]);
   const [loading, setLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
-  const [showFileBrowser, setShowFileBrowser] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [recentDatabases, setRecentDatabases] = useState<VectorDatabase[]>([]);
 
@@ -44,7 +41,7 @@ export default function AdvancedVectorDatabaseSelector({
     setLoading(true);
     try {
       // Get LanceDB stats to see current database
-      const stats = await invoke('lancedb_get_stats');
+      const stats = await invoke<{ total_vectors: number; last_updated?: string }>('lancedb_get_stats');
       console.log('📊 Vector stats loaded:', stats);
       
       // Load recent databases from localStorage
@@ -62,7 +59,7 @@ export default function AdvancedVectorDatabaseSelector({
       };
       
       // Filter out any existing current database entries to avoid duplicates
-      const filteredRecent = recent.filter(db => db.id !== 'current-database');
+      const filteredRecent = recent.filter((db: VectorDatabase) => db.id !== 'current-database');
       
       // Always update with fresh stats
       setDatabases([currentDb, ...filteredRecent]);

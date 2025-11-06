@@ -6,7 +6,7 @@ import { Send, Search, Brain, Loader2 } from 'lucide-react';
 export default function EnhancedChatInput() {
   const [message, setMessage] = useState('');
   const [useContext, setUseContext] = useState(true);
-  const { sendToAI, sendToAIWithContext, aiThinking, contextLoading } = useEnhancedChatStore();
+  const { sendToAI, aiThinking, contextLoading } = useEnhancedChatStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -14,12 +14,7 @@ export default function EnhancedChatInput() {
 
     const messageText = message.trim();
     setMessage('');
-
-    if (useContext) {
-      await sendToAIWithContext(messageText);
-    } else {
-      await sendToAI(messageText);
-    }
+    await sendToAI(messageText);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

@@ -1,7 +1,7 @@
 // Enhanced Message List with Vector Search Context
 import { useEffect, useRef } from 'react';
 import { useEnhancedChatStore } from '../../store/useEnhancedChatStore';
-import { User, Bot, Search, Brain, Loader2 } from 'lucide-react';
+import { User, Bot, Brain, Loader2 } from 'lucide-react';
 
 export default function EnhancedMessageList() {
   const { 

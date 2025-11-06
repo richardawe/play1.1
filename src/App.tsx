@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import MainLayout from './components/layout/MainLayout';
-import ChatInterface from './components/chat/ChatInterface';
 import EnhancedChatInterface from './components/chat/EnhancedChatInterface';
 import DocumentsInterface from './components/documents/DocumentsInterface';
 import TasksInterface from './components/tasks/TasksInterface';

@@ -1,7 +1,7 @@
 import { Search, Settings, Command } from 'lucide-react';
 
 interface TopbarProps {
-  currentModule: 'data-operations' | 'chat' | 'documents' | 'tasks' | 'calendar';
+  currentModule: 'data-operations' | 'chat' | 'documents' | 'tasks' | 'calendar' | 'vector-test';
   onSettingsClick: () => void;
   onSearchClick: () => void;
 }
@@ -12,6 +12,7 @@ const moduleNames = {
   documents: 'Documents',
   tasks: 'Tasks',
   calendar: 'Calendar',
+  'vector-test': 'Vector Test',
 };
 
 const moduleDescriptions = {
@@ -20,6 +21,7 @@ const moduleDescriptions = {
   documents: 'Draft notes and reports',
   tasks: 'Manage actionable items',
   calendar: 'Plan work sessions',
+  'vector-test': 'Test vector database functionality',
 };
 
 export default function Topbar({ currentModule, onSettingsClick, onSearchClick }: TopbarProps) {

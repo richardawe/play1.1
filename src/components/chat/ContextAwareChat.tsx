@@ -1,15 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { invoke } from '@tauri-apps/api/tauri';
+import { useState, useEffect, useRef } from 'react';
 import { useEnhancedChatStore } from '../../store/useEnhancedChatStore';
-import { User, Bot, Search, Brain, Loader2, Send, Settings } from 'lucide-react';
+import { User, Bot, Search, Brain, Loader2, Send } from 'lucide-react';
 
-interface SimilarityResult {
-  content_id: number;
-  content_type: string;
-  content: string;
-  similarity_score: number;
-  metadata?: string;
-}
 
 export default function ContextAwareChat() {
   const { 
@@ -18,7 +10,7 @@ export default function ContextAwareChat() {
     aiThinking, 
     contextResults, 
     contextLoading,
-    sendToAIWithContext,
+    sendToAI,
     sendMessage,
     clearContext,
     loadMessages
@@ -47,7 +39,7 @@ export default function ContextAwareChat() {
     setMessage('');
 
     if (useContext) {
-      await sendToAIWithContext(messageText);
+      await sendToAI(messageText);
     } else {
       await sendMessage(messageText);
     }

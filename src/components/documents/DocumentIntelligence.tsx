@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
 import { Brain, Tag, FileText, Search, BarChart3, Sparkles, Loader2 } from 'lucide-react';
 

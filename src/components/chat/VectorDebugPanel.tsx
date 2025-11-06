@@ -1,5 +1,5 @@
 // Vector Debug Panel - Debug vector database content
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
 import { Database, Search, RefreshCw, AlertCircle } from 'lucide-react';
 

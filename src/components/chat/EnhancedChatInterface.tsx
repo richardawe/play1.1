@@ -6,7 +6,6 @@ import MessageList from './MessageList';
 import MessageComposer from './MessageComposer';
 import ChatSearch from './ChatSearch';
 import { useTextSelection } from '../../hooks/useTextSelection';
-import CrossModuleActions from '../common/CrossModuleActions';
 import AIDocumentGenerator from '../common/AIDocumentGenerator';
 import { useDragDrop } from '../../hooks/useDragDrop';
 import AdvancedVectorDatabaseSelector from './AdvancedVectorDatabaseSelector';
@@ -16,10 +15,7 @@ export default function EnhancedChatInterface() {
   const { 
     loadMessages, 
     clearMessages, 
-    aiThinking, 
     contextResults, 
-    contextLoading,
-    searchContext,
     clearContext,
     selectedDatabase,
     setSelectedDatabase
@@ -37,7 +33,7 @@ export default function EnhancedChatInterface() {
   });
 
   // Enable drag and drop
-  const { isDragOver } = useDragDrop({
+  useDragDrop({
     module: 'chat',
     onDrop: (data) => {
       console.log('Dropped in chat:', data);
@@ -62,11 +58,6 @@ export default function EnhancedChatInterface() {
     clearContext();
   };
 
-  const handleSearchContext = async (query: string) => {
-    await searchContext(query);
-    setShowContext(true);
-  };
-
   return (
     <div className="flex flex-col h-full bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-play-dark dark:via-slate-900 dark:to-play-surface">
       {/* Header */}
@@ -89,8 +80,8 @@ export default function EnhancedChatInterface() {
           <div className="flex items-center gap-2">
             {/* Vector Database Selector */}
             <AdvancedVectorDatabaseSelector
-              onDatabaseSelect={setSelectedDatabase}
-              selectedDatabase={selectedDatabase}
+              onDatabaseSelect={(db) => setSelectedDatabase(db)}
+              selectedDatabase={selectedDatabase ?? undefined}
             />
             
             {/* Context Toggle */}
@@ -191,41 +182,25 @@ export default function EnhancedChatInterface() {
       <div className="flex-1 flex flex-col min-h-0">
         {/* Messages */}
         <div className="flex-1 overflow-hidden">
-          <MessageList 
-            onSearchContext={handleSearchContext}
-            contextLoading={contextLoading}
-          />
+          <MessageList />
         </div>
 
         {/* Message Composer */}
         <div className="flex-shrink-0 border-t border-gray-200 dark:border-gray-700 bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm">
-          <MessageComposer 
-            onSendToAI={(content) => {
-              // This will trigger context search automatically
-              const { sendToAI } = useEnhancedChatStore.getState();
-              sendToAI(content);
-            }}
-            aiThinking={aiThinking}
-          />
+          <MessageComposer />
         </div>
       </div>
 
       {/* Modals */}
-      {searchOpen && (
-        <ChatSearch
-          onClose={() => setSearchOpen(false)}
-          onSearchContext={handleSearchContext}
-        />
-      )}
+      <ChatSearch
+        isOpen={searchOpen}
+        onClose={() => setSearchOpen(false)}
+      />
       
-      {aiDocGeneratorOpen && (
-        <AIDocumentGenerator
-          onClose={() => setAiDocGeneratorOpen(false)}
-        />
-      )}
-
-      {/* Cross-module actions */}
-      <CrossModuleActions />
+      <AIDocumentGenerator
+        isOpen={aiDocGeneratorOpen}
+        onClose={() => setAiDocGeneratorOpen(false)}
+      />
     </div>
   );
 }
